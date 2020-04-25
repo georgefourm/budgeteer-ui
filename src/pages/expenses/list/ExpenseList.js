@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { get, put, post, del } from "../../../utils/network";
-import ExpenseModal from "./ExpenseModal";
 import moment from "moment";
+import CrudTable from "../../../components/crud/CrudTable";
+import { Form, Select, DatePicker, Input } from "antd";
 
 export default function ExpenseList() {
   const [expenses, setExpenses] = useState([]);
@@ -39,82 +38,93 @@ export default function ExpenseList() {
       title: "Bought At",
       dataIndex: "boughtAt",
       key: "id",
-      render: (text, record) => (
-        <span>{moment(text).format("DD/MM/YYYY")}</span>
-      ),
-    },
-    {
-      title: "Actions",
-      key: "id",
-      render: (text, record) => (
-        <Space>
-          <Button onClick={() => onEdit(record.id)}>
-            <EditOutlined />
-            Edit
-          </Button>
-          <Button onClick={() => onDelete(record.id)}>
-            <DeleteOutlined />
-            Delete
-          </Button>
-        </Space>
-      ),
+      render: (text) => <span>{moment(text).format("DD/MM/YYYY")}</span>,
     },
   ];
+  const onUpdate = async (id, values) => {
+    const updated = await put(`expenses/${id}`, values);
+    setExpenses(expenses.map((e) => (e.id === id ? updated : e)));
+  };
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editing, setEditing] = useState(null);
-
-  const onSave = async (values) => {
-    if (editing) {
-      setEditing(false);
-      const response = await put("expenses/" + editing.id, {
-        itemId: values.item,
-        ...values,
-      });
-      setExpenses(
-        expenses.map((expense) => {
-          if (expense.id === editing.id) {
-            return response;
-          } else {
-            return expense;
-          }
-        })
-      );
-    } else {
-      const response = await post("expenses", {
-        itemId: values.item,
-        ...values,
-      });
-      setExpenses([response, ...expenses]);
-    }
-    setModalVisible(false);
+  const onCreate = async (values) => {
+    const created = await post("expenses", values);
+    setExpenses([created, ...expenses]);
   };
 
   const onDelete = async (id) => {
     await del(`expenses/${id}`);
     setExpenses(expenses.filter((exp) => exp.id !== id));
   };
-  const onEdit = (id) => {
-    setEditing(expenses.find((exp) => exp.id === id));
-    setModalVisible(true);
+
+  const renderForm = (form, editing) => {
+    if (editing) {
+      form.setFieldsValue({
+        ...editing,
+        itemId: editing.item.id,
+        boughtAt: editing.boughtAt ? moment(editing.boughtAt) : null,
+      });
+    } else {
+      form.setFieldsValue({
+        boughtAt: moment(),
+        amount: 1,
+      });
+    }
+    return (
+      <React.Fragment>
+        <Form.Item
+          label="Item"
+          name="itemId"
+          rules={[
+            {
+              required: true,
+              message: "An item is required",
+            },
+          ]}
+        >
+          <Select
+            placeholder="Expense Item"
+            allowClear={true}
+            showSearch
+            filterOption={(value, option) =>
+              option.children.toLowerCase().includes(value.toLowerCase())
+            }
+            onChange={(itemId) => {
+              const item = items.find((i) => i.id === itemId);
+              form.setFieldsValue({
+                cost: item.defaultCost,
+              });
+            }}
+          >
+            {items.map((item) => (
+              <Select.Option key={item.id} value={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item label="Cost" name="cost">
+          <Input />
+        </Form.Item>
+        <Form.Item label="Amount" name="amount">
+          <Input type="number" />
+        </Form.Item>
+        <Form.Item label="Bought At" name="boughtAt">
+          <DatePicker />
+        </Form.Item>
+      </React.Fragment>
+    );
   };
-  const onCancel = () => {
-    setEditing(false);
-    setModalVisible(false);
-  };
+
   return (
-    <div>
-      <Button type="primary" onClick={() => setModalVisible(true)}>
-        Add New
-      </Button>
-      <ExpenseModal
-        visible={modalVisible}
-        items={items}
-        onSave={onSave}
-        onCancel={onCancel}
-        formValues={editing}
-      />
-      <Table dataSource={expenses} columns={columns} rowKey="id" />
-    </div>
+    <CrudTable
+      data={expenses}
+      {...{
+        columns,
+        renderForm,
+        onCreate,
+        onUpdate,
+        onDelete,
+      }}
+    />
   );
 }

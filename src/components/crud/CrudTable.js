@@ -75,6 +75,7 @@ export default function CrudTable({
   };
   const onCancel = () => {
     setModalVisible(false);
+    setEditing(null);
   };
 
   return (

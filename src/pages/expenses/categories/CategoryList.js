@@ -25,18 +25,12 @@ export default function CategoryList() {
   ];
 
   const onCreate = async (values) => {
-    const response = await post("categories", {
-      name: values.name,
-      parentId: values.parent || null,
-    });
+    const response = await post("categories", values);
     setCategories([response, ...categories]);
   };
 
   const onUpdate = async (id, values) => {
-    const response = await put("categories/" + id, {
-      name: values.name,
-      parentId: values.parent || null,
-    });
+    const response = await put("categories/" + id, values);
     setCategories(categories.map((cat) => (cat.id === id ? response : cat)));
   };
 
@@ -49,7 +43,7 @@ export default function CategoryList() {
     if (editing) {
       form.setFieldsValue({
         name: editing.name,
-        parent: editing.parent ? editing.parent.id : null,
+        parentId: editing.parent ? editing.parent.id : null,
       });
     }
     return (
@@ -66,7 +60,7 @@ export default function CategoryList() {
         >
           <Input />
         </Form.Item>
-        <Form.Item label="Parent" name="parent">
+        <Form.Item label="Parent" name="parentId">
           <Select placeholder="Parent category" allowClear={true}>
             {categories
               .filter((cat) => !cat.parent)
