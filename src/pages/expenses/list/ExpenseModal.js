@@ -15,9 +15,9 @@ export default function ExpenseModal({
   if (formValues != null) {
     form.setFieldsValue({
       item: formValues.item ? formValues.item.id : null,
-      cost: formValues.cost,
-      amount: formValues.amount,
-      boughtAt: formValues.boughtAt,
+      cost: formValues.cost || null,
+      amount: formValues.amount || null,
+      boughtAt: formValues.boughtAt || null,
     });
   }
 

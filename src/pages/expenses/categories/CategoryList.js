@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import CrudTable from "../../../components/crud/CrudTable";
 import { get, put, post, del } from "../../../utils/network";
-import CategoryModal from "./CategoryModal";
+import { Form, Input, Select } from "antd";
 
 export default function CategoryList() {
   const [categories, setCategories] = useState([]);
@@ -23,78 +22,73 @@ export default function CategoryList() {
       dataIndex: ["parent", "name"],
       key: "id",
     },
-    {
-      title: "Actions",
-      key: "id",
-      render: (text, record) => (
-        <Space>
-          <Button onClick={() => onEdit(record.id)}>
-            <EditOutlined />
-            Edit
-          </Button>
-          <Button onClick={() => onDelete(record.id)}>
-            <DeleteOutlined />
-            Delete
-          </Button>
-        </Space>
-      ),
-    },
   ];
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const onCreate = async (values) => {
+    const response = await post("categories", {
+      name: values.name,
+      parentId: values.parent || null,
+    });
+    setCategories([response, ...categories]);
+  };
 
-  const onSave = async (values) => {
-    if (editing) {
-      setEditing(false);
-      const response = await put("categories/" + editing.id, {
-        name: values.name,
-        parentId: values.parent || null,
-      });
-      setCategories(
-        categories.map((cat) => {
-          if (cat.id === editing.id) {
-            return response;
-          } else {
-            return cat;
-          }
-        })
-      );
-    } else {
-      const response = await post("categories", {
-        name: values.name,
-        parentId: values.parent || null,
-      });
-      setCategories([response, ...categories]);
-    }
-    setModalVisible(false);
+  const onUpdate = async (id, values) => {
+    const response = await put("categories/" + id, {
+      name: values.name,
+      parentId: values.parent || null,
+    });
+    setCategories(categories.map((cat) => (cat.id === id ? response : cat)));
   };
 
   const onDelete = async (id) => {
     await del(`categories/${id}`);
     setCategories(categories.filter((cat) => cat.id !== id));
   };
-  const onEdit = (id) => {
-    setEditing(categories.find((cat) => cat.id === id));
-    setModalVisible(true);
-  };
-  const onCancel = () => {
-    setEditing(false);
-    setModalVisible(false);
+
+  const renderForm = (form, editing) => {
+    if (editing) {
+      form.setFieldsValue({
+        name: editing.name,
+        parent: editing.parent ? editing.parent.id : null,
+      });
+    }
+    return (
+      <React.Fragment>
+        <Form.Item
+          label="Name"
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: "The Category name is required",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item label="Parent" name="parent">
+          <Select placeholder="Parent category" allowClear={true}>
+            {categories
+              .filter((cat) => !cat.parent)
+              .map((category) => (
+                <Select.Option key={category.id} value={category.id}>
+                  {category.name}
+                </Select.Option>
+              ))}
+          </Select>
+        </Form.Item>
+      </React.Fragment>
+    );
   };
   return (
-    <div>
-      <Button type="primary" onClick={() => setModalVisible(true)}>
-        Add New
-      </Button>
-      <CategoryModal
-        visible={modalVisible}
-        categories={categories}
-        onSave={onSave}
-        onCancel={onCancel}
-        formValues={editing}
-      />
-      <Table dataSource={categories} columns={columns} rowKey="id" />
-    </div>
+    <CrudTable
+      data={categories}
+      columns={columns}
+      renderForm={renderForm}
+      formProps={{ name: "category" }}
+      onCreate={onCreate}
+      onUpdate={onUpdate}
+      onDelete={onDelete}
+    />
   );
 }
