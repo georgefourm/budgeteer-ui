@@ -13,7 +13,7 @@ export default function Navigation() {
         <Link to="/dashboard">Dashboard</Link>
       </Menu.Item>
       <Menu.Item key="incomes">
-        <Link to="/incomes">Incomes</Link>
+        <Link to="/incomes/list">Incomes</Link>
       </Menu.Item>
       <Menu.Item key="expenses">
         <Link to="/expenses/list">Expenses</Link>
