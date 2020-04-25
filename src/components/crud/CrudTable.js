@@ -48,7 +48,7 @@ export default function CrudTable({
   data,
   columns,
   renderForm,
-  formProps,
+  formProps = {},
   onCreate,
   onUpdate,
   onDelete,

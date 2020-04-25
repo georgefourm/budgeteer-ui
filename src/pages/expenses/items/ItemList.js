@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { get, put, post, del } from "../../../utils/network";
-import ItemModal from "./ItemModal";
+import CrudTable from "../../../components/crud/CrudTable";
+import { Form, Input, Select } from "antd";
 
 export default function ItemList() {
   const [categories, setCategories] = useState([]);
@@ -34,80 +33,76 @@ export default function ItemList() {
       dataIndex: ["category", "name"],
       key: "id",
     },
-    {
-      title: "Actions",
-      key: "id",
-      render: (text, record) => (
-        <Space>
-          <Button onClick={() => onEdit(record.id)}>
-            <EditOutlined />
-            Edit
-          </Button>
-          <Button onClick={() => onDelete(record.id)}>
-            <DeleteOutlined />
-            Delete
-          </Button>
-        </Space>
-      ),
-    },
   ];
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const onCreate = async (values) => {
+    const created = await post("items", values);
+    setItems([created, ...items]);
+  };
 
-  const onSave = async (values) => {
-    if (editing) {
-      setEditing(false);
-      const response = await put("items/" + editing.id, {
-        name: values.name,
-        defaultCost: values.defaultCost || null,
-        categoryId: values.category || null,
-      });
-      setItems(
-        items.map((item) => {
-          if (item.id === editing.id) {
-            return response;
-          } else {
-            return item;
-          }
-        })
-      );
-    } else {
-      const response = await post("items", {
-        name: values.name,
-        defaultCost: values.defaultCost || null,
-        categoryId: values.category || null,
-      });
-      setItems([response, ...items]);
-    }
-    setModalVisible(false);
+  const onUpdate = async (id, values) => {
+    const updated = await put(`items/${id}`, values);
+    setItems(items.map((i) => (i.id === id ? updated : i)));
   };
 
   const onDelete = async (id) => {
     await del(`items/${id}`);
-    setItems(items.filter((item) => item.id !== id));
+    setItems(items.filter((i) => i.id !== id));
   };
-  const onEdit = (id) => {
-    setEditing(items.find((item) => item.id === id));
-    setModalVisible(true);
-  };
-  const onCancel = () => {
-    setEditing(false);
-    setModalVisible(false);
+
+  const renderForm = (form, editing) => {
+    if (editing) {
+      form.setFieldsValue({
+        categoryId: editing.category ? editing.category.id : null,
+        ...editing,
+      });
+    }
+    return (
+      <React.Fragment>
+        <Form.Item
+          label="Name"
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: "The Item name is required",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item label="Default Cost" name="defaultCost">
+          <Input />
+        </Form.Item>
+        <Form.Item label="Category" name="categoryId">
+          <Select
+            placeholder="Item category"
+            allowClear={true}
+            showSearch
+            filterOption={(value, option) =>
+              option.children.toLowerCase().includes(value.toLowerCase())
+            }
+          >
+            {categories.map((category) => (
+              <Select.Option key={category.id} value={category.id}>
+                {category.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </React.Fragment>
+    );
   };
   return (
-    <div>
-      <Button type="primary" onClick={() => setModalVisible(true)}>
-        Add New
-      </Button>
-      <ItemModal
-        visible={modalVisible}
-        categories={categories}
-        onSave={onSave}
-        onCancel={onCancel}
-        formValues={editing}
-      />
-      <Table dataSource={items} columns={columns} rowKey="id" />
-    </div>
+    <CrudTable
+      data={items}
+      {...{
+        columns,
+        onCreate,
+        onUpdate,
+        onDelete,
+        renderForm,
+      }}
+    />
   );
 }
