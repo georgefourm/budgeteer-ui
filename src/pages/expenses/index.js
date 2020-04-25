@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Card } from "antd";
 import ExpenseList from "./ExpenseList";
-import CategoryList from "./CategoryList";
+import CategoryList from "./categories/CategoryList";
+import ItemList from "./items/ItemList";
 import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
 
 export default function Expenses() {
@@ -40,7 +41,7 @@ export default function Expenses() {
           <ExpenseList />
         </Route>
         <Route path={`${match.path}/items`}>
-          <h1>Items list</h1>
+          <ItemList />
         </Route>
         <Route path={`${match.path}/categories`}>
           <CategoryList />
