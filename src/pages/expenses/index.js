@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card } from "antd";
-import ExpenseList from "./ExpenseList";
+import ExpenseList from "./list/ExpenseList";
 import CategoryList from "./categories/CategoryList";
 import ItemList from "./items/ItemList";
 import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
