@@ -1,48 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Table, Button, Modal, Form, Space } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-
-const useResetFormOnCloseModal = ({ form, visible }) => {
-  const prevVisibleRef = useRef();
-  useEffect(() => {
-    prevVisibleRef.current = visible;
-  }, [visible]);
-  const prevVisible = prevVisibleRef.current;
-  useEffect(() => {
-    if (!visible && prevVisible) {
-      form.resetFields();
-    }
-  }, [visible]);
-};
-
-function FormModal({
-  renderForm,
-  formProps,
-  onCancel,
-  editing,
-  onSave,
-  visible,
-}) {
-  const [form] = Form.useForm();
-  useResetFormOnCloseModal({
-    form,
-    visible,
-  });
-  return (
-    <Modal
-      title={editing ? "Edit" : "Add new"}
-      visible={visible}
-      onCancel={onCancel}
-      onOk={() => {
-        form.submit();
-      }}
-    >
-      <Form form={form} onFinish={onSave} layout="vertical" {...formProps}>
-        {renderForm(form, editing)}
-      </Form>
-    </Modal>
-  );
-}
+import React, { useState } from "react";
+import { Table, Button, Space, Divider } from "antd";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import FormModal from "./FormModal";
+import { useKeyBinding } from "utils/hooks";
 
 export default function CrudTable({
   data,
@@ -78,11 +38,18 @@ export default function CrudTable({
     setEditing(null);
   };
 
+  useKeyBinding("c", () => {
+    if (!modalVisible) {
+      setModalVisible(true);
+    }
+  });
+
   return (
     <div>
       <Button type="primary" onClick={() => setModalVisible(true)}>
-        Add New
+        <PlusOutlined /> Add New
       </Button>
+      <Divider />
       <FormModal
         {...{
           renderForm,
@@ -95,6 +62,7 @@ export default function CrudTable({
       />
       <Table
         dataSource={data}
+        bordered
         columns={[
           ...columns,
           {

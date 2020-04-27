@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import CrudTable from "../../../components/crud/CrudTable";
-import { get, put, post, del } from "../../../utils/network";
+import CrudTable from "components/crud/CrudTable";
+import { get, put, post, del } from "utils/network";
 import { Form, Input, Select } from "antd";
 
 export default function CategoryList() {
