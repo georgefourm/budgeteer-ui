@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "antd";
 import "./dashboard.scss";
 import BalancePanel from "./BalancePanel";
-import TimeSeriesChart from "./TimeSeriesChart";
+import BalanceByMonthChart from "./BalanceByMonthChart";
 import CategoryBreakdown from "./CategoryBreakdown";
 import { get } from "utils/network";
+import moment from "moment";
 const chartData = [
   { value: 14, time: 1503617297689 },
   { value: 15, time: 1503616962277 },
@@ -15,12 +16,26 @@ const chartData = [
 
 export default function Dashboard() {
   const [categories, setCategories] = useState([]);
+  const [months, setMonths] = useState([]);
   useEffect(() => {
     get("expenses/breakdown").then((result) => {
       setCategories(
         result.map((item) => ({
           name: item.category,
           value: item.totalCost,
+        }))
+      );
+    });
+    const endDate = moment();
+    const startDate = endDate.clone().startOf("year");
+    get("incomes/monthly", {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    }).then((result) => {
+      setMonths(
+        result.map((item) => ({
+          value: item.amount,
+          time: moment(item.date, "YYYY-MM-DD").toDate().getTime(),
         }))
       );
     });
@@ -32,7 +47,7 @@ export default function Dashboard() {
       <Row gutter={24}>
         <Col span={16}>
           <Card title="Expenses/Income by month">
-            <TimeSeriesChart chartData={chartData} />
+            <BalanceByMonthChart chartData={months} />
           </Card>
         </Col>
         <Col span={8}>
