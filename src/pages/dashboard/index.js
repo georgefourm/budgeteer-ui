@@ -15,7 +15,7 @@ export default function Dashboard() {
         balance: response.totalIncome - response.totalExpenses,
       });
     });
-  });
+  }, []);
   return (
     <div>
       <Row gutter={24}>
