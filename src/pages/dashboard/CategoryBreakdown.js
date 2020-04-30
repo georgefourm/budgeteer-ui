@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import {
   PieChart,
   Pie,
@@ -29,7 +29,8 @@ export default function CategoryBreakDown({ data }) {
           outerRadius={110}
           innerRadius={70}
           fill="#8884d8"
-          dataKey="value"
+          dataKey="totalCost"
+          nameKey="category"
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
