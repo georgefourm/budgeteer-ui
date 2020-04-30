@@ -25,10 +25,7 @@ export default function AnalysisPanel() {
     setExpenses(monthlyExpenses.map(mapTimestamps));
   };
   useEffect(() => {
-    fetchData(
-      moment().subtract(6, "months").toISOString(),
-      moment().toISOString()
-    );
+    fetchData(moment().startOf("year").toISOString(), moment().toISOString());
   }, []);
   return (
     <Row gutter={24}>

@@ -18,7 +18,7 @@ const BalanceByMonthChart = ({ income, expenses }) => (
     <LineChart>
       <XAxis
         dataKey="date"
-        domain={["auto", "auto"]}
+        domain={["dataMin", "dataMax"]}
         name="Date"
         scale="time"
         tickFormatter={formatter}
