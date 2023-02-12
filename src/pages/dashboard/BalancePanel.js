@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Card, Col, Row, Statistic, DatePicker } from "antd";
+import { Card, Col, Row, Statistic, DatePicker, Space } from "antd";
 import { get } from "utils/network";
 import moment from "moment";
 import "./dashboard.scss";
 
 export default function BalancePanel() {
-  const [stats, setStats] = useState({
-    totalExpenses: 0,
-    totalIncome: 0,
-  });
-  const [endDate, setEndDate] = useState(moment());
-  const [startDate, setStartDate] = useState(endDate.clone().startOf("month"));
-  useEffect(() => {
-    get("dashboard/balance", {
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-    }).then((response) => {
-      setStats({
-        ...response,
-      });
-    });
-  }, [startDate, endDate]);
+  const startDate = moment().startOf("day");
+  const endDate = startDate.startOf("month");
+  const stats = {};
+  // const [stats, setStats] = useState({
+  //   totalExpenses: 0,
+  //   totalIncome: 0,
+  // });
+  // const now = moment();
+  // const [endDate, setEndDate] = useState(now.startOf("day"));
+  // const [startDate, setStartDate] = useState(endDate.clone().startOf("month"));
+  // useEffect(() => {
+  //   get("dashboard/balance", {
+  //     startDate: startDate.toISOString(),
+  //     endDate: endDate.toISOString(),
+  //   })
+  //     .then((response) => {
+  //       setStats({
+  //         ...response,
+  //       });
+  //     })
+  //     .catch(console.error);
+  // }, [startDate, endDate, stats]);
   return (
     <Row gutter={24}>
       <Col span={6}>
@@ -39,11 +45,11 @@ export default function BalancePanel() {
                     moment().subtract(1, "month").endOf("month"),
                   ],
                 }}
-                onChange={(value) => {
-                  const [start, end] = value;
-                  setStartDate(start);
-                  setEndDate(end);
-                }}
+                // onChange={(value) => {
+                //   const [start, end] = value;
+                //   setStartDate(start);
+                //   setEndDate(end);
+                // }}
               />
             </div>
           </div>

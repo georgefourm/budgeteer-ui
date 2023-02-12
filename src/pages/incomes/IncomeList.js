@@ -5,9 +5,9 @@ import { Form, Input, Select, DatePicker } from "antd";
 import moment from "moment";
 
 export default function IncomeList() {
-  const [types, setTypes] = useState([]);
+  const [categories, setTypes] = useState([]);
   useEffect(() => {
-    get("income-types").then((response) => {
+    get("categories").then((response) => {
       setTypes(response);
     });
   }, []);
@@ -20,24 +20,19 @@ export default function IncomeList() {
 
   const columns = [
     {
-      title: "Type",
-      dataIndex: ["type", "name"],
-      key: "id",
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "id",
-    },
-    {
       title: "Received At",
       dataIndex: "receivedAt",
       key: "id",
       render: (text) => <span>{moment(text).format("DD/MM/YYYY")}</span>,
     },
     {
-      title: "Notes",
-      dataIndex: "notes",
+      title: "Category",
+      dataIndex: ["cateory", "name"],
+      key: "id",
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
       key: "id",
     },
   ];
@@ -60,7 +55,7 @@ export default function IncomeList() {
   const renderForm = (form, editing) => {
     if (editing) {
       form.setFieldsValue({
-        typeId: editing.type ? editing.type.id : null,
+        categoryId: editing.type ? editing.category.id : null,
         ...editing,
         receivedAt: editing.receivedAt ? moment(editing.receivedAt) : null,
       });
@@ -72,26 +67,25 @@ export default function IncomeList() {
     return (
       <React.Fragment>
         <Form.Item
-          label="Type"
-          name="typeId"
+          label="Category"
+          name="categoryId"
           rules={[
             {
               required: true,
-              message: "The income amount",
             },
           ]}
         >
           <Select
-            placeholder="Income type"
+            placeholder="Category"
             allowClear={true}
             showSearch
             filterOption={(value, option) =>
               option.children.toLowerCase().includes(value.toLowerCase())
             }
           >
-            {types.map((type) => (
-              <Select.Option key={type.id} value={type.id}>
-                {type.name}
+            {categories.map((cat) => (
+              <Select.Option key={cat.id} value={cat.id}>
+                {cat.name}
               </Select.Option>
             ))}
           </Select>
@@ -119,9 +113,6 @@ export default function IncomeList() {
           ]}
         >
           <DatePicker />
-        </Form.Item>
-        <Form.Item label="Notes" name="notes">
-          <Input.TextArea />
         </Form.Item>
       </React.Fragment>
     );

@@ -12,11 +12,11 @@ export default function Navigation() {
       <Menu.Item key="dashboard">
         <Link to="/dashboard">Dashboard</Link>
       </Menu.Item>
-      <Menu.Item key="incomes">
-        <Link to="/incomes/list">Incomes</Link>
-      </Menu.Item>
       <Menu.Item key="expenses">
-        <Link to="/expenses/list">Expenses</Link>
+        <Link to="/expenses">Expenses</Link>
+      </Menu.Item>
+      <Menu.Item key="incomes">
+        <Link to="/incomes">Incomes</Link>
       </Menu.Item>
     </Menu>
   );
