@@ -27,7 +27,7 @@ export default function IncomeList() {
     },
     {
       title: "Category",
-      dataIndex: ["cateory", "name"],
+      dataIndex: ["category", "name"],
       key: "id",
     },
     {
