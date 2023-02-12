@@ -1,44 +1,45 @@
 import React from "react";
 import "./App.scss";
-import "antd/dist/antd.css";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
-import Navigation from "./components/navigation/Navigation";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Root from "./components/navigation/Root";
 
-import Dashboard from "./pages/dashboard";
 import Expenses from "./pages/expenses";
-import Incomes from "./pages/incomes";
+// import Incomes from "./pages/incomes";
 
-import { Layout } from "antd";
-const { Header, Content } = Layout;
+// Expenses
+import ExpenseList from "./pages/expenses/list/ExpenseList";
+import CategoryList from "./pages/expenses/categories/CategoryList";
+import ItemList from "./pages/expenses/items/ItemList";
 
 function App() {
-  return (
-    <div>
-      <Layout>
-        <BrowserRouter>
-          <Header>
-            <Navigation />
-          </Header>
-          <Content className="content">
-            <Switch>
-              <Route exact path="/">
-                <Redirect to="/dashboard" />
-              </Route>
-              <Route exact path="/dashboard">
-                <Dashboard />
-              </Route>
-              <Route path="/incomes">
-                <Incomes />
-              </Route>
-              <Route path="/expenses">
-                <Expenses />
-              </Route>
-            </Switch>
-          </Content>
-        </BrowserRouter>
-      </Layout>
-    </div>
-  );
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Root />,
+      children: [
+        {
+          path: "/expenses",
+          element: <Expenses />,
+          children: [
+            {
+              path: "/expenses/list",
+              element: <ExpenseList />,
+              index: true,
+            },
+            {
+              path: "/expenses/items",
+              element: <ItemList />,
+            },
+            {
+              path: "/expenses/categories",
+              element: <CategoryList />,
+            },
+          ],
+        },
+      ],
+    },
+  ]);
+  return <RouterProvider router={router} />;
 }
 
 export default App;

@@ -62,7 +62,11 @@ export default function CrudTable({
       />
       <Table
         dataSource={data}
+        rowSelection={{
+          type: "checkbox",
+        }}
         bordered
+        size="small"
         columns={[
           ...columns,
           {

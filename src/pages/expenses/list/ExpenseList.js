@@ -20,14 +20,10 @@ export default function ExpenseList() {
 
   const columns = [
     {
-      title: "Item",
-      dataIndex: ["item", "name"],
+      title: "Bought At",
+      dataIndex: "boughtAt",
       key: "id",
-    },
-    {
-      title: "Cost",
-      dataIndex: "cost",
-      key: "id",
+      render: (text) => <span>{moment(text).format("DD/MM/YYYY")}</span>,
     },
     {
       title: "Amount",
@@ -35,10 +31,14 @@ export default function ExpenseList() {
       key: "id",
     },
     {
-      title: "Bought At",
-      dataIndex: "boughtAt",
+      title: "Category",
+      dataIndex: ["category", "name"],
       key: "id",
-      render: (text) => <span>{moment(text).format("DD/MM/YYYY")}</span>,
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "id",
     },
   ];
   const onUpdate = async (id, values) => {
@@ -60,7 +60,6 @@ export default function ExpenseList() {
     if (editing) {
       form.setFieldsValue({
         ...editing,
-        itemId: editing.item.id,
         boughtAt: editing.boughtAt ? moment(editing.boughtAt) : null,
       });
     } else {
@@ -71,45 +70,14 @@ export default function ExpenseList() {
     }
     return (
       <React.Fragment>
-        <Form.Item
-          label="Item"
-          name="itemId"
-          rules={[
-            {
-              required: true,
-              message: "An item is required",
-            },
-          ]}
-        >
-          <Select
-            placeholder="Expense Item"
-            allowClear={true}
-            showSearch
-            filterOption={(value, option) =>
-              option.children.toLowerCase().includes(value.toLowerCase())
-            }
-            onChange={(itemId) => {
-              const item = items.find((i) => i.id === itemId);
-              form.setFieldsValue({
-                cost: item.defaultCost,
-              });
-            }}
-          >
-            {items.map((item) => (
-              <Select.Option key={item.id} value={item.id}>
-                {item.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item label="Cost" name="cost">
-          <Input />
+        <Form.Item label="Bought At" name="boughtAt">
+          <DatePicker />
         </Form.Item>
         <Form.Item label="Amount" name="amount">
           <Input type="number" />
         </Form.Item>
-        <Form.Item label="Bought At" name="boughtAt">
-          <DatePicker />
+        <Form.Item label="Description" name="description">
+          <Input />
         </Form.Item>
       </React.Fragment>
     );

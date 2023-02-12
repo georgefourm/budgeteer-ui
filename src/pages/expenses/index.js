@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Card } from "antd";
-import ExpenseList from "./list/ExpenseList";
-import CategoryList from "./categories/CategoryList";
-import ItemList from "./items/ItemList";
-import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export default function Expenses() {
   const tabList = [
@@ -12,19 +9,19 @@ export default function Expenses() {
       tab: "List",
     },
     {
-      key: "items",
-      tab: "Items",
-    },
-    {
       key: "categories",
       tab: "Categories",
     },
+    {
+      key: "items",
+      tab: "Items",
+    },
   ];
-  const match = useRouteMatch();
-  const history = useHistory();
 
-  const pathParts = history.location.pathname.split("/");
-  const [tab, setTab] = useState(pathParts[2]);
+  let location = useLocation();
+  let navigate = useNavigate();
+  let path = location.pathname.split("/");
+  const tab = path.length > 0 ? path[2] : "list";
 
   return (
     <Card
@@ -32,21 +29,10 @@ export default function Expenses() {
       tabList={tabList}
       activeTabKey={tab}
       onTabChange={(newTab) => {
-        setTab(newTab);
-        history.push(`${match.path}/${newTab}`);
+        navigate(newTab);
       }}
     >
-      <Switch>
-        <Route path={`${match.path}/list`}>
-          <ExpenseList />
-        </Route>
-        <Route path={`${match.path}/items`}>
-          <ItemList />
-        </Route>
-        <Route path={`${match.path}/categories`}>
-          <CategoryList />
-        </Route>
-      </Switch>
+      <Outlet />
     </Card>
   );
 }
