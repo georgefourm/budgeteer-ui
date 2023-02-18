@@ -12,7 +12,9 @@ function Root() {
         <Navigation />
       </Header>
       <Content>
-        <Outlet />
+        <div className="content">
+          <Outlet />
+        </div>
       </Content>
     </div>
   );

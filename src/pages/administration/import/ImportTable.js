@@ -1,26 +1,33 @@
+import CrudTable from "components/crud/CrudTable";
 import React, { useState, useEffect } from "react";
-import { get, put, post, del } from "../../../utils/network";
+import { Form, DatePicker, Input, Tag } from "antd";
 import moment from "moment";
-import CrudTable from "../../../components/crud/CrudTable";
-import { Form, DatePicker, Input } from "antd";
+import CategorySelect from "components/crud/CategorySelect";
+import { get } from "utils/network";
+import ColorTag from "components/text/ColorTag";
 
-export default function ExpenseList() {
-  const [expenses, setExpenses] = useState([]);
+export default function ImportTable({ expenses, setExpenses }) {
+  const onUpdate = async (id, values) => {
+    setExpenses(expenses.map((e) => (e.id === id ? values : e)));
+  };
+
+  const onCreate = async (values) => {
+    setExpenses([...expenses, values]);
+  };
+
+  const onDelete = async (id) => {
+    setExpenses(expenses.filter((exp) => exp.id !== id));
+  };
+  const [categories, setCategories] = useState([]);
   useEffect(() => {
-    get("expenses").then((response) => {
-      setExpenses(response);
+    get("categories").then((response) => {
+      setCategories(response);
     });
   }, []);
-  const [items, setItems] = useState([]);
-  useEffect(() => {
-    get("items").then((response) => {
-      setItems(response);
-    });
-  }, []);
-
+  const CategoryTag = ColorTag(categories);
   const columns = [
     {
-      title: "Bought At",
+      title: "Date",
       dataIndex: "boughtAt",
       key: "id",
       render: (text) => <span>{moment(text).format("DD/MM/YYYY")}</span>,
@@ -32,8 +39,9 @@ export default function ExpenseList() {
     },
     {
       title: "Category",
-      dataIndex: ["category", "name"],
+      dataIndex: "categoryId",
       key: "id",
+      render: (id) => id && <CategoryTag id={id} />,
     },
     {
       title: "Description",
@@ -41,20 +49,6 @@ export default function ExpenseList() {
       key: "id",
     },
   ];
-  const onUpdate = async (id, values) => {
-    const updated = await put(`expenses/${id}`, values);
-    setExpenses(expenses.map((e) => (e.id === id ? updated : e)));
-  };
-
-  const onCreate = async (values) => {
-    const created = await post("expenses", values);
-    setExpenses([created, ...expenses]);
-  };
-
-  const onDelete = async (id) => {
-    await del(`expenses/${id}`);
-    setExpenses(expenses.filter((exp) => exp.id !== id));
-  };
 
   const renderForm = (form, editing) => {
     if (editing) {
@@ -64,7 +58,7 @@ export default function ExpenseList() {
       });
     } else {
       form.setFieldsValue({
-        boughtAt: moment(),
+        boughtAt: null,
         amount: 1,
       });
     }
@@ -79,6 +73,7 @@ export default function ExpenseList() {
         <Form.Item label="Description" name="description">
           <Input />
         </Form.Item>
+        <CategorySelect categories={categories} />
       </React.Fragment>
     );
   };

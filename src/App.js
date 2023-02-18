@@ -6,6 +6,7 @@ import Root from "./components/navigation/Root";
 import ExpenseList from "./pages/expenses/list/ExpenseList";
 import Dashboard from "pages/dashboard";
 import IncomeList from "pages/incomes/IncomeList";
+import ImportPage from "pages/administration/import/ImportPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -24,6 +25,10 @@ function App() {
         {
           path: "/incomes",
           element: <IncomeList />,
+        },
+        {
+          path: "/administration",
+          element: <ImportPage />,
         },
       ],
     },

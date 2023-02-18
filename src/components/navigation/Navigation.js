@@ -18,6 +18,9 @@ export default function Navigation() {
       <Menu.Item key="incomes">
         <Link to="/incomes">Incomes</Link>
       </Menu.Item>
+      <Menu.Item key="administration">
+        <Link to="/administration">Administration</Link>
+      </Menu.Item>
     </Menu>
   );
 }

@@ -25,6 +25,14 @@ export const post = async (path, values = {}, query = {}) => {
   return await response.json();
 };
 
+export const postMultipart = async (path, body) => {
+  const response = await fetch(buildUrl(path, {}), {
+    method: "POST",
+    body: body,
+  });
+  return await response.json();
+};
+
 export const put = async (path, values = {}, query = {}) => {
   const response = await fetch(buildUrl(path, query), {
     method: "PUT",
