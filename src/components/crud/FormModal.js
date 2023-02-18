@@ -18,7 +18,7 @@ export default function FormModal({
   return (
     <Modal
       title={editing ? "Edit" : "Add new"}
-      visible={visible}
+      open={visible}
       onCancel={onCancel}
       onOk={() => {
         form.submit();

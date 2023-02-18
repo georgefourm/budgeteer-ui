@@ -1,8 +1,8 @@
 import { Col, Row } from "antd";
 import ImportForm from "./ImportForm";
-import ImportTable from "./ImportTable";
 import { useState } from "react";
 import { postMultipart, post } from "utils/network";
+import ExpenseTable from "components/expenses/ExpenseTable";
 
 export default function ImportPage() {
   const [expenses, setExpenses] = useState([]);
@@ -27,6 +27,7 @@ export default function ImportPage() {
 
   const onSubmit = async () => {
     await post("expenses/bulk", expenses);
+    setExpenses([]);
   };
 
   return (
@@ -35,7 +36,11 @@ export default function ImportPage() {
         <ImportForm onImport={onImport} onSubmit={onSubmit} />
       </Col>
       <Col span={18}>
-        <ImportTable expenses={expenses} setExpenses={setExpenses} />
+        <ExpenseTable
+          expenses={expenses}
+          setExpenses={setExpenses}
+          live={false}
+        />
       </Col>
     </Row>
   );

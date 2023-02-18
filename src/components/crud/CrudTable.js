@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Table, Button, Space, Divider } from "antd";
+import { Table, Button, Space, Divider, Popconfirm } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import FormModal from "./FormModal";
-import { useKeyBinding } from "utils/hooks";
 
 export default function CrudTable({
   data,
@@ -14,41 +13,78 @@ export default function CrudTable({
   onDelete,
 }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const onSave = async (values) => {
     if (editing) {
       setEditing(null);
-      await onUpdate(editing.id, values);
+      Object.keys(values).forEach((key) => {
+        if (values[key] === null) {
+          delete values[key];
+        }
+      });
+      await onUpdate(selectedRows, values);
     } else {
       await onCreate(values);
     }
     setModalVisible(false);
   };
 
-  const onUpdateClicked = (record) => {
-    setEditing(record);
+  const onUpdateClicked = () => {
+    const editingRecord = {};
+    selectedRows.forEach((row) => {
+      Object.keys(row).forEach((key) => {
+        if (editingRecord[key] === undefined) {
+          editingRecord[key] = row[key];
+        } else if (editingRecord[key] != row[key]) {
+          editingRecord[key] = null;
+        }
+      });
+    });
+    setEditing(editingRecord);
     setModalVisible(true);
   };
-  const onDeleteClicked = async (id) => {
-    await onDelete(id);
+  const onDeleteClicked = async () => {
+    setLoading(true);
+    await onDelete(selectedRows);
+    setLoading(false);
+    setConfirmOpen(false);
   };
   const onCancel = () => {
     setModalVisible(false);
     setEditing(null);
   };
 
-  useKeyBinding("c", () => {
-    if (!modalVisible) {
-      setModalVisible(true);
-    }
-  });
-
   return (
     <div>
-      <Button type="primary" onClick={() => setModalVisible(true)}>
-        <PlusOutlined /> Add New
-      </Button>
+      <Space>
+        <Button
+          type="primary"
+          onClick={() => setModalVisible(true)}
+          loading={loading}
+        >
+          <PlusOutlined /> Add New
+        </Button>
+        <Button onClick={() => onUpdateClicked()} loading={loading}>
+          <EditOutlined /> Edit
+        </Button>
+
+        <Button danger onClick={() => setConfirmOpen(true)} loading={loading}>
+          <DeleteOutlined /> Delete
+        </Button>
+        <Popconfirm
+          title="Delete Records"
+          description={`Are you sure you want to delete the selected ${selectedRows.length} record(s)?`}
+          open={confirmOpen}
+          onConfirm={() => onDeleteClicked()}
+          placement={"right"}
+          onCancel={() => setConfirmOpen(false)}
+        ></Popconfirm>
+      </Space>
+
       <Divider />
       <FormModal
         {...{
@@ -64,28 +100,13 @@ export default function CrudTable({
         dataSource={data}
         rowSelection={{
           type: "checkbox",
+          onChange: (keys, rows, info) => {
+            setSelectedRows(rows);
+          },
         }}
         bordered
         size="small"
-        columns={[
-          ...columns,
-          {
-            title: "Actions",
-            key: "id",
-            render: (text, record) => (
-              <Space>
-                <Button onClick={() => onUpdateClicked(record)}>
-                  <EditOutlined />
-                  Edit
-                </Button>
-                <Button onClick={() => onDeleteClicked(record.id)}>
-                  <DeleteOutlined />
-                  Delete
-                </Button>
-              </Space>
-            ),
-          },
-        ]}
+        columns={[...columns]}
         rowKey="id"
       />
     </div>
