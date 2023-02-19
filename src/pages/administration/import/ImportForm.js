@@ -7,6 +7,7 @@ import {
   Select,
   Space,
   message,
+  Checkbox,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -130,7 +131,15 @@ export default function ImportForm({ onImport, onSubmit }) {
         >
           <Input />
         </Form.Item>
-
+        <Form.Item
+          name="expensesAsNegative"
+          valuePropName="checked"
+          wrapperCol={{
+            span: 16,
+          }}
+        >
+          <Checkbox>Expenses As Negative</Checkbox>
+        </Form.Item>
         <Form.Item label="File" name="files" required>
           <Upload beforeUpload={() => false} maxCount={1}>
             <Button icon={<UploadOutlined />}>Select File</Button>

@@ -3,19 +3,25 @@ import { get, put, post, del } from "../../utils/network";
 import moment from "moment";
 import CrudTable from "../crud/CrudTable";
 import { Form, DatePicker, Input } from "antd";
-import ColorTag from "components/text/ColorTag";
-import CategorySelect from "components/crud/CategorySelect";
+import ListSelect from "components/crud/ListSelect";
+import { getLabelColumnProps } from "components/crud/utils";
 
 export default function ExpenseTable({ expenses, setExpenses, live = true }) {
   const [categories, setCategories] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
     get("categories").then((response) => {
       setCategories(response);
     });
+    get("members").then((response) => {
+      setMembers(response);
+    });
+    get("groups").then((response) => {
+      setGroups(response);
+    });
   }, []);
-
-  const CategoryTag = ColorTag(categories);
 
   const columns = [
     {
@@ -33,7 +39,19 @@ export default function ExpenseTable({ expenses, setExpenses, live = true }) {
       title: "Category",
       dataIndex: ["categoryId"],
       key: "id",
-      render: (id) => id && <CategoryTag id={id} />,
+      ...getLabelColumnProps(categories, "categoryId"),
+    },
+    {
+      title: "Member",
+      dataIndex: ["memberId"],
+      key: "id",
+      ...getLabelColumnProps(members, "memberId"),
+    },
+    {
+      title: "Group",
+      dataIndex: ["groupId"],
+      key: "id",
+      ...getLabelColumnProps(groups, "groupId"),
     },
     {
       title: "Description",
@@ -97,7 +115,19 @@ export default function ExpenseTable({ expenses, setExpenses, live = true }) {
         <Form.Item label="Description" name="description">
           <Input />
         </Form.Item>
-        <CategorySelect categories={categories} />
+        <ListSelect items={categories} name="categoryId" label="Category" />
+        <ListSelect
+          items={members}
+          name="memberId"
+          label="Member"
+          required={false}
+        />
+        <ListSelect
+          items={groups}
+          name="groupId"
+          label="Group"
+          required={false}
+        />
       </React.Fragment>
     );
   };

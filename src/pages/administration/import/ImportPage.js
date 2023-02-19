@@ -3,16 +3,22 @@ import ImportForm from "./ImportForm";
 import { useState } from "react";
 import { postMultipart, post } from "utils/network";
 import ExpenseTable from "components/expenses/ExpenseTable";
+import _ from "lodash";
 
 export default function ImportPage() {
   const [expenses, setExpenses] = useState([]);
   const onImport = async (values) => {
     const config = {
       memberId: values.memberId,
-      fileConfiguration: {
-        ...values,
-      },
+      fileConfiguration: _.pick(values, [
+        "valueField",
+        "timestampField",
+        "timestampFormat",
+        "descriptionField",
+        "expensesAsNegative",
+      ]),
     };
+    console.dir(config);
     const data = new FormData();
     const blob = new Blob([JSON.stringify(config)], {
       type: "application/json",

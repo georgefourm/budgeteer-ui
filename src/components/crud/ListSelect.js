@@ -1,28 +1,28 @@
 import { Form, Select } from "antd";
 
-export default function CategorySelect({ categories }) {
+export default function ListSelect({ items, name, label, required = true }) {
   return (
     <Form.Item
-      label="Category"
-      name="categoryId"
+      label={label}
+      name={name}
       rules={[
         {
-          required: true,
-          message: "Select a category",
+          required: required,
+          message: "Select " + label,
         },
       ]}
     >
       <Select
-        placeholder="Category"
+        placeholder={label}
         allowClear={true}
         showSearch
         filterOption={(value, option) =>
           option.children.toLowerCase().includes(value.toLowerCase())
         }
       >
-        {categories.map((cat) => (
-          <Select.Option key={cat.id} value={cat.id}>
-            {cat.name}
+        {items.map((i) => (
+          <Select.Option key={i.id} value={i.id}>
+            {i.name}
           </Select.Option>
         ))}
       </Select>

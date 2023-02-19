@@ -3,24 +3,23 @@ import { Tag } from "antd";
 export default function ColorTag(values) {
   const allColors = [
     "magenta",
-    "red",
-    "volcano",
-    "orange",
-    "gold",
     "lime",
+    "red",
     "green",
+    "volcano",
     "cyan",
-    "blue",
+    "orange",
     "geekblue",
+    "gold",
     "purple",
+    "blue",
   ];
   const colorMap = {};
   values.forEach((val, idx) => {
     colorMap[val.id] = allColors[idx % allColors.length];
   });
   return ({ id }) => {
-    return (
-      <Tag color={colorMap[id]}>{values.find((v) => v.id == id).name}</Tag>
-    );
+    const val = values.find((v) => v.id == id);
+    return <Tag color={colorMap[id]}>{val ? val.name : ""}</Tag>;
   };
 }
