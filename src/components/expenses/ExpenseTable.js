@@ -115,7 +115,12 @@ export default function ExpenseTable({ expenses, setExpenses, live = true }) {
         <Form.Item label="Description" name="description">
           <Input />
         </Form.Item>
-        <ListSelect items={categories} name="categoryId" label="Category" />
+        <ListSelect
+          items={categories}
+          name="categoryId"
+          label="Category"
+          required={!editing}
+        />
         <ListSelect
           items={members}
           name="memberId"
