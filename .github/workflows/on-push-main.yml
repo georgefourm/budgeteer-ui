@@ -39,7 +39,7 @@ jobs:
         with:
           context: .
           build-args: |
-            BACKEND_URL=localhost:8080
+            BACKEND_URL=http://localhost:8080
           file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
